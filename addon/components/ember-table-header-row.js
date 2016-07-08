@@ -1,15 +1,14 @@
 import Ember from 'ember';
-import StyleBindingsMixin from 'ember-table/mixins/style-bindings';
 
-// We hacked this. There is an inconsistency at the level in which we are
-// handling scroll event...
-export default Ember.Component.extend(
-  StyleBindingsMixin, {
+export default Ember.Component.extend({
   classNames: ['ember-table-table-row', 'ember-table-header-row'],
-  styleBindings: ['width'],
-  width: function() {
-    return this.get('tableComponent._rowWidth');
+  attributeBindings: ['style'],
+  style: function() {
+    const width = this.get('tableComponent._rowWidth');
+    console.log('row width', width);
+    return `width: ${width}px`;
   }.property("tableComponent._rowWidth"),
+
   sortableOption: Ember.computed(function() {
     return {
       axis: 'x',
