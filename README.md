@@ -1,5 +1,12 @@
 # Ember Table [![Build Status](https://secure.travis-ci.org/Addepar/ember-table.svg?branch=master)](http://travis-ci.org/Addepar/ember-table)
 
+Fork from http://addepar.github.com/ember-table/ , make some changes:
+
+1. I can work now, no errors and warnings any more!
+2. change views to Component, so It can support Ember 2.0 
+3. Right side fixed Column
+ 
+
 A table built using [Ember.js](http://emberjs.com/) that lazily renders rows.
 
 Ember Table allows you to handle very large data sets by only rendering the
