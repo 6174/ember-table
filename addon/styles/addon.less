@@ -253,6 +253,19 @@
   border-right: 0;
 }
 
+/**
+ * fixed table column shadow
+ * @type {[type]}
+ */
+@shadow-color: rgba(187, 186, 186, 0.67);
+.ember-table-left-table-block {
+  box-shadow: 1px 1px 3px @shadow-color;
+}
+
+.ember-table-right-table-block {
+  box-shadow: -1px -1px 3px @shadow-color;
+}
+
 .ember-table-left-table-block .ember-table-cell {
   // This is not scalable for multiple frozen columns
   margin-left: 0;

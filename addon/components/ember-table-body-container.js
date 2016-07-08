@@ -29,7 +29,7 @@ export default Ember.Component.extend(
         if (Math.abs(deltaX) <= Math.abs(deltaY)) {
             return;
         }
-        var scrollLeft = this.$('.ember-table-right-table-block').scrollLeft() + deltaX;
+        var scrollLeft = this.$('.ember-table-main-table-block').scrollLeft() + deltaX;
         this.set('scrollLeft', scrollLeft);
         event.preventDefault();
     },
@@ -38,7 +38,7 @@ export default Ember.Component.extend(
         if (Math.abs(deltaX) <= Math.abs(deltaY)) {
             return;
         }
-        var scrollLeft = this.$('.ember-table-right-table-block').scrollLeft() + deltaX;
+        var scrollLeft = this.$('.ember-table-main-table-block').scrollLeft() + deltaX;
         this.set('scrollLeft', scrollLeft);
         event.preventDefault();
     }
