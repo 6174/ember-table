@@ -4,17 +4,28 @@
       className="ember-table-left-table-block"
       columns=tableComponent.fixedColumns
       tableComponent=tableComponent
-      width=tableComponent._fixedBlockWidth
+      width=tableComponent._fixedLeftColumnsWidth
       height=tableComponent.headerHeight
     }}
   {{/if}}
-
+  
+  {{log tableComponent.tableColumns}}
   {{ember-table-header-block 
-    className="ember-table-right-table-block"
+    className="ember-table-main-table-block"
     columns=tableComponent.tableColumns
     scrollLeft=tableComponent._tableScrollLeft
     width=tableComponent._tableBlockWidth
     tableComponent=tableComponent
     height=tableComponent.headerHeight
   }}
+
+  {{#if tableComponent.numRightFixedColumns}}
+    {{ember-table-header-block
+      className="ember-table-right-table-block"
+      columns=tableComponent.rightFixedColumns
+      tableComponent=tableComponent
+      width=tableComponent._fixedRightColumnsWidth
+      height=tableComponent.headerHeight
+    }}
+  {{/if}}
 </div>

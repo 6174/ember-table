@@ -2,17 +2,20 @@
   <div class="antiscroll-inner">
     <div class="ember-table-table-scrollable-wrapper">
       {{#if tableComponent.numFixedColumns}}
-        {{ember-table-body-lazy-block className="ember-table-left-table-block"
+        {{ember-table-body-lazy-block 
+          className="ember-table-left-table-block"
           content=tableComponent.bodyContent
           columns=tableComponent.fixedColumns
-          width=tableComponent._fixedBlockWidth
+          width=tableComponent._fixedLeftBlockWidth
           numItemsShowing=tableComponent._numItemsShowing
           scrollTop=scrollTop
           tableComponent=tableComponent
           startIndex=tableComponent._startIndex
         }}
       {{/if}}
-      {{ember-table-body-lazy-block className="ember-table-right-table-block"
+      
+      {{ember-table-body-lazy-block 
+        className="ember-table-main-table-block"
         content=tableComponent.bodyContent
         columns=tableComponent.tableColumns
         scrollLeft=tableComponent._tableScrollLeft
@@ -22,6 +25,20 @@
         tableComponent=tableComponent
         startIndex=tableComponent._startIndex
       }}
+
+      {{#if tableComponent.numRightFixedColumns}}
+        {{ember-table-body-lazy-block
+          className="ember-table-right-table-block"
+          content=tableComponent.bodyContent
+          columns=tableComponent.fixedRightcolumns
+          width=tableComponent._fixedRightBlockWidth
+          numItemsShowing=tableComponent._numItemsShowing
+          scrollTop=scrollTop
+          tableComponent=tableComponent
+          startIndex=tableComponent._startIndex
+        }}
+      {{/if}}
+
     </div>
   </div>
 </div>

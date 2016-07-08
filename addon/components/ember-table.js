@@ -31,6 +31,9 @@ StyleBindingsMixin, ResizeHandlerMixin, {
   // are always visible, even when the table is scrolled horizontally.
   numFixedColumns: 0,
 
+  // The number of fixed columns on thr right side of the table
+  numRightFixedColumns: 0,
+
   // The number of footer rows in the table. Footer rows appear at the bottom of
   // the table and are always visible.
   // TODO(new-api): Rename to `numFooterRows`
@@ -202,6 +205,9 @@ StyleBindingsMixin, ResizeHandlerMixin, {
     }
   }).property(),
 
+  /**
+   * fixed columns on the left
+   */
   fixedColumns: Ember.computed(function() {
     var columns = this.get('columns');
     if (!columns) {
@@ -211,14 +217,30 @@ StyleBindingsMixin, ResizeHandlerMixin, {
     return columns.slice(0, numFixedColumns) || [];
   }).property('columns.[]', 'numFixedColumns'),
 
+  /** 
+   * fixed columns on the right
+   */
+  rightFixedColumns: Ember.computed(function() {
+    var columns = this.get('columns');
+    if (!columns) {
+      return Ember.A();
+    }
+    var numRightFixedColumns = this.get('numRightFixedColumns') || 0;
+    return columns.slice(columns.length - numRightFixedColumns, columns.length) || [];
+  }).property('columns.[]', 'numRightFixedColumns'),
+
+  /**
+   * main columns of the table
+   */
   tableColumns: Ember.computed(function() {
     var columns = this.get('columns');
     if (!columns) {
       return Ember.A();
     }
-    var numFixedColumns = this.get('numFixedColumns') || 0;
-    return columns.slice(numFixedColumns, columns.get('length')) || [];
-  }).property('columns.[]', 'numFixedColumns'),
+    const numFixedColumns = this.get('numFixedColumns') || 0;
+    const numRightFixedColumns = this.get('numRightFixedColumns') || 0;
+    return columns.slice(numFixedColumns, columns.get('length') - numRightFixedColumns) || [];
+  }).property('columns.[]', 'numFixedColumns', 'numRightFixedColumns'),
 
   prepareTableColumns: function() {
     var _this = this;
@@ -419,12 +441,22 @@ StyleBindingsMixin, ResizeHandlerMixin, {
   }).property('_height', '_tableContentHeight', '_headerHeight',
       '_footerHeight'),
 
-  // Actual width of the fixed columns
-  _fixedColumnsWidth: Ember.computed(function() {
+  /**
+   * Actual width of the fixed columns
+   */
+  _fixedLeftColumnsWidth: Ember.computed(function() {
     return this._getTotalWidth(this.get('fixedColumns'));
   }).property('fixedColumns.@each.width'),
+  _fixedRightColumnsWidth: Ember.computed(function() {
+    return this._getTotalWidth(this.get('rightFixedColumns'));
+  }).property('rightFixedColumns.@each.width'),
+  _fixedColumnsWidth: Ember.computed(function() {
+    return this.get('_fixedLeftColumnsWidth') + this.get('_fixedRightColumnsWidth');
+  }).property('_fixedLeftColumnsWidth', '_fixedRightColumnsWidth'),
 
-  // Actual width of the (non-fixed) columns
+  /**
+   * Actual width of the (non-fixed) columns
+   */
   _tableColumnsWidth: Ember.computed(function() {
     // Hack: We add 3px padding to the right of the table content so that we can
     // reorder into the last column.
@@ -433,6 +465,9 @@ StyleBindingsMixin, ResizeHandlerMixin, {
     return Math.max(contentWidth, availableWidth);
   }).property('tableColumns.@each.width', '_width', '_fixedColumnsWidth'),
 
+  /**
+   * width of row content
+   */
   _rowWidth: Ember.computed(function() {
     var columnsWidth = this.get('_tableColumnsWidth');
     var nonFixedTableWidth = this.get('_tableContainerWidth') -
@@ -441,18 +476,25 @@ StyleBindingsMixin, ResizeHandlerMixin, {
   }).property('_fixedColumnsWidth', '_tableColumnsWidth',
       '_tableContainerWidth'),
 
-  // Dynamic header height that adjusts according to the header content height
+  /**
+   * Dynamic header height that adjusts according to the header content height
+   */
   _headerHeight: Ember.computed(function() {
     var minHeight = this.get('minHeaderHeight');
     var contentHeaderHeight = this.get('_contentHeaderHeight');
     return Math.max(contentHeaderHeight, minHeight);
   }).property('_contentHeaderHeight', 'minHeaderHeight'),
 
-  // Dynamic footer height that adjusts according to the footer content height
+  /**
+   * Dynamic footer height that adjusts according to the footer content height
+   */
   _footerHeight: Ember.computed(function() {
     return this.get('hasFooter') ? this.get('footerHeight') : 0;
   }).property('footerHeight', 'hasFooter'),
 
+  /**
+   * [description]
+   */
   _bodyHeight: Ember.computed(function() {
     var bodyHeight = this.get('_tablesContainerHeight');
     if (this.get('hasHeader')) {
@@ -465,11 +507,15 @@ StyleBindingsMixin, ResizeHandlerMixin, {
   }).property('_tablesContainerHeight', '_hasHorizontalScrollbar',
       '_headerHeight', 'footerHeight', 'hasHeader', 'hasFooter'),
 
+  /**
+   * block width
+   */
+  _fixedLeftBlockWidthBinding: '_fixedLeftColumnsWidth',
+  _fixedRightBlockWidthBinding: '_fixedRightColumnsWidth',
   _tableBlockWidth: Ember.computed(function() {
     return this.get('_width') - this.get('_fixedColumnsWidth');
   }).property('_width', '_fixedColumnsWidth'),
 
-  _fixedBlockWidthBinding: '_fixedColumnsWidth',
 
   _tableContentHeight: Ember.computed(function() {
     return this.get('rowHeight') * this.get('bodyContent.length');

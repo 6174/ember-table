@@ -10,7 +10,7 @@ export default Ember.Component.extend(
   scrollElementSelector: '.antiscroll-inner',
   width: Ember.computed.alias('tableComponent._scrollContainerWidth'),
   height: 10,
-  left: Ember.computed.alias('tableComponent._fixedColumnsWidth'),
+  left: Ember.computed.alias('tableComponent._fixedLeftColumnsWidth'),
   scrollTop: Ember.computed.alias('tableComponent._tableScrollTop'),
   scrollLeft: Ember.computed.alias('tableComponent._tableScrollLeft'),
 

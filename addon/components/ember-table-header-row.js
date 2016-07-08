@@ -5,7 +5,6 @@ export default Ember.Component.extend({
   attributeBindings: ['style'],
   style: function() {
     const width = this.get('tableComponent._rowWidth');
-    console.log('row width', width);
     return `width: ${width}px`;
   }.property("tableComponent._rowWidth"),
 
