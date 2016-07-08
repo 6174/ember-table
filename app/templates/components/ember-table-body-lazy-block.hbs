@@ -1,0 +1,8 @@
+{{#each content as |it index|}}
+	{{ember-table-body-row
+		tableComponnet=tableComponent
+		content=it
+		itemIndex=index
+		width=width
+	}}
+{{/each}}

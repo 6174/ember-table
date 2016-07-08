@@ -1,7 +1,6 @@
 import Ember from 'ember';
 import StyleBindingsMixin from 'ember-table/mixins/style-bindings';
 import ResizeHandlerMixin from 'ember-table/mixins/resize-handler';
-import RowArrayController from 'ember-table/controllers/row-array';
 import Row from 'ember-table/controllers/row';
 
 export default Ember.Component.extend(
@@ -182,13 +181,16 @@ StyleBindingsMixin, ResizeHandlerMixin, {
 
   // An array of Ember.Table.Row computed based on `content`
   bodyContent: Ember.computed(function() {
-    return RowArrayController.create({
-      target: this,
-      parentController: this,
-      container: this.get('container'),
-      itemController: Row,
-      content: this.get('_resolvedContent')
-    });
+    const content = this.get('content');
+    return content.map((it) => {
+      return {
+        ...it,
+        target: this,
+        parentController: this,
+        container: this.get('container'),
+        itemController: Row
+      }
+    })
   }).property('_resolvedContent.[]'),
 
   // An array of Ember.Table.Row
@@ -408,6 +410,11 @@ StyleBindingsMixin, ResizeHandlerMixin, {
     var height = this.get('_height');
     var contentHeight = this.get('_tableContentHeight') +
         this.get('_headerHeight') + this.get('_footerHeight');
+
+    if (!contentHeight) {
+      return height;
+    }
+
     return Math.min(contentHeight, height);
   }).property('_height', '_tableContentHeight', '_headerHeight',
       '_footerHeight'),

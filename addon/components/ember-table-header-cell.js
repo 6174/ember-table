@@ -1,15 +1,12 @@
 import Ember from 'ember';
 import StyleBindingsMixin from 'ember-table/mixins/style-bindings';
-import RegisterTableComponentMixin from 'ember-table/mixins/register-table-component';
 
-export default Ember.View.extend(
-StyleBindingsMixin, RegisterTableComponentMixin, {
+export default Ember.Component.extend(
+StyleBindingsMixin, {
   // ---------------------------------------------------------------------------
   // API - Inputs
   // ---------------------------------------------------------------------------
 
-  // TODO: Doc
-  templateName: 'header-cell',
   classNames: ['ember-table-cell', 'ember-table-header-cell'],
   classNameBindings: ['column.isSortable:sortable', 'column.textAlign'],
   styleBindings: ['width', 'height'],
@@ -118,7 +115,7 @@ StyleBindingsMixin, RegisterTableComponentMixin, {
       this.get('tableComponent').elementSizeDidChange();
     }
 
-    this.get('context').sendAction('onColumnResized', this.get('column'), newWidth);
+    this.get('controller').sendAction('onColumnResized', this.get('column'), newWidth);
   },
 
   /**

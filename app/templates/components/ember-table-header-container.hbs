@@ -1,0 +1,20 @@
+<div class="ember-table-table-fixed-wrapper">
+  {{#if tableComponent.numFixedColumns}}
+    {{ember-table-header-block
+      className="ember-table-left-table-block"
+      columns=tableComponent.fixedColumns
+      tableComponent=tableComponent
+      width=tableComponent._fixedBlockWidth
+      height=tableComponent.headerHeight
+    }}
+  {{/if}}
+
+  {{ember-table-header-block 
+    className="ember-table-right-table-block"
+    columns=tableComponent.tableColumns
+    scrollLeft=tableComponent._tableScrollLeft
+    width=tableComponent._tableBlockWidth
+    tableComponent=tableComponent
+    height=tableComponent.headerHeight
+  }}
+</div>

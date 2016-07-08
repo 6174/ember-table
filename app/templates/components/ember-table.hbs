@@ -1,9 +1,15 @@
 {{#if hasHeader}}
-  {{view "header-table-container"}}
+    {{ember-table-header-container
+  		tableComponent=this
+  	}}
 {{/if}}
-{{view "body-table-container"}}
-{{#if hasFooter}}
+
+{{ember-table-body-container
+	tableComponent=this}}
+
+{{!-- {{#if hasFooter}}
   {{view "footer-table-container"}}
 {{/if}}
 {{view "scroll-container"}}
 {{view "column-sortable-indicator"}}
+ --}}

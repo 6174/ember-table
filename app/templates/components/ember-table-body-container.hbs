@@ -1,0 +1,27 @@
+<div class="antiscroll-box">
+  <div class="antiscroll-inner">
+    <div class="ember-table-table-scrollable-wrapper">
+      {{#if tableComponent.numFixedColumns}}
+        {{ember-table-body-lazy-block className="ember-table-left-table-block"
+          content=tableComponent.bodyContent
+          columns=tableComponent.fixedColumns
+          width=tableComponent._fixedBlockWidth
+          numItemsShowing=tableComponent._numItemsShowing
+          scrollTop=scrollTop
+          tableComponent=tableComponent
+          startIndex=tableComponent._startIndex
+        }}
+      {{/if}}
+      {{ember-table-body-lazy-block className="ember-table-right-table-block"
+        content=tableComponent.bodyContent
+        columns=tableComponent.tableColumns
+        scrollLeft=tableComponent._tableScrollLeft
+        width=tableComponent._tableBlockWidth
+        numItemsShowing=tableComponent._numItemsShowing
+        scrollTop=scrollTop
+        tableComponent=tableComponent
+        startIndex=tableComponent._startIndex
+      }}
+    </div>
+  </div>
+</div>

@@ -1,18 +1,15 @@
 import Ember from 'ember';
 import StyleBindingsMixin from 'ember-table/mixins/style-bindings';
-import RegisterTableComponentMixin from 'ember-table/mixins/register-table-component';
 
 // We hacked this. There is an inconsistency at the level in which we are
 // handling scroll event...
-export default Ember.View.extend(
-StyleBindingsMixin, RegisterTableComponentMixin, {
-  templateName: 'header-row',
+export default Ember.Component.extend(
+  StyleBindingsMixin, {
   classNames: ['ember-table-table-row', 'ember-table-header-row'],
   styleBindings: ['width'],
-  columns: Ember.computed.alias('content'),
-  width: Ember.computed.alias('tableComponent._rowWidth'),
-
-  // Options for jQuery UI sortable
+  width: function() {
+    return this.get('tableComponent._rowWidth');
+  }.property("tableComponent._rowWidth"),
   sortableOption: Ember.computed(function() {
     return {
       axis: 'x',
@@ -45,7 +42,6 @@ StyleBindingsMixin, RegisterTableComponentMixin, {
         $divs.sortable('destroy');
       }
     }
-    this._super();
   },
 
   onColumnSortStop: function() {
