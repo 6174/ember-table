@@ -13,8 +13,8 @@ export default Ember.Component.extend(StyleBindingsMixin, {
     // ---------------------------------------------------------------------------
     init: function() {
         this._super();
-        // this.contentPathDidChange();
-        // this.contentDidChange();
+        this.contentPathDidChange();
+        this.contentDidChange();
     },
     row: Ember.computed.alias('parentView.row'),
     record: Ember.computed.alias('row'),

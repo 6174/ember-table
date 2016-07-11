@@ -35,6 +35,12 @@ function defaultFilter(cellValue, filterString) {
     return -1 !== cellValue.indexOf(filterString);
 }
 
+const createContentPlaceholder = function() {
+    return {
+            __rowHolder: true
+    }
+};
+
 export default Ember.Component.extend(StyleBindingsMixin, ResizeHandlerMixin, {
     /**
      * =====================================================================
@@ -83,9 +89,40 @@ export default Ember.Component.extend(StyleBindingsMixin, ResizeHandlerMixin, {
     hasFooter: true,
 
     /**
+     * [filteringIgnoreCase description]
+     * @type {Boolean}
+     */
+    filteringIgnoreCase: true,
+
+    /**
+     * pageSize
+     */
+    pageSize: 20,
+    /**
+     * [showIndexNumber description]
+     * @type {Boolean}
+     */
+    showIndexNumber: false,
+    /**
+     * [indexNumberBase description]
+     * @type {Number}
+     */
+    indexNumberBase: 1,
+    /**
+     * [currentPageNumber description]
+     * @type {Number}
+     */
+    currentPageNumber: 1,
+    /**
+     * [sortProperties description]
+     * @type {[type]}
+     */
+    sortProperties: A(['__index']),
+
+    /**
      * =====================================================================
      *
-     *                     Component Inner Configuration
+     *                     Component Confs And LifeCycle Methods
      * 
      * =====================================================================
      */
@@ -100,6 +137,10 @@ export default Ember.Component.extend(StyleBindingsMixin, ResizeHandlerMixin, {
      */
     setup: on('init', function() {
         this._super();
+
+        /**
+         * jquery ui check
+         */
         if (!Ember.$.ui) {
             throw 'Missing dependency: jquery-ui';
         }
@@ -109,6 +150,10 @@ export default Ember.Component.extend(StyleBindingsMixin, ResizeHandlerMixin, {
         if (!Ember.$().antiscroll) {
             throw 'Missing dependency: antiscroll.js';
         }
+
+        /**
+         * initial scroll
+         */
         this.set('_tableScrollTop', 0);
     }),
 
@@ -148,7 +193,6 @@ export default Ember.Component.extend(StyleBindingsMixin, ResizeHandlerMixin, {
      * 
      * =====================================================================
      */
-
     /**
      * inner columns definition
      */
@@ -166,19 +210,96 @@ export default Ember.Component.extend(StyleBindingsMixin, ResizeHandlerMixin, {
     }).property('columns.[]'),
 
     /**
+     * [description]
+     * @param  {[type]} ) {               } [description]
+     * @return {[type]}   [description]
+     */
+    filteredContent: computed('filterString', 'content.[]', 'processedColumns', function() {
+        const {
+            processedColumns,
+            content,
+            filteringIgnoreCase
+        } = getProperties(this, 'processedColumns', 'content', 'filteringIgnoreCase');
+
+        let filterString = get(this, 'filterString');
+
+        if (!content) {
+            return A([]);
+        }
+
+        /**
+         * add index number for content
+         * @type {[type]}
+         */
+        const indexNumberBase = this.get('indexNumberBase') || 0;
+        const showIndexNumber = this.get('showIndexNumber');
+        content.forEach((it, index) => {
+            set(it, '__index', index + indexNumberBase);
+        });
+
+        /**
+         * filter every rows and columns
+         */
+        const filteredContent = content.filter(function(row) {
+            return processedColumns.length ? processedColumns.any(c => {
+                const propertyName = get(c, 'propertyName');
+                if (propertyName) {
+                    let cellValue = '' + get(row, propertyName);
+                    if (filteringIgnoreCase) {
+                        cellValue = cellValue.toLowerCase();
+                        filterString = filterString.toLowerCase();
+                    }
+                    return -1 !== cellValue.indexOf(filterString);
+                }
+                return false;
+            }) : true;
+        });
+
+        return A(filteredContent);
+    }),
+
+    /**
+     * content pagination 
+     */
+    visibleContent: computed('filteredContent.[]', 'pageSize', 'currentPageNumber', function() {
+        const {
+            filteredContent,
+            pageSize,
+            currentPageNumber
+        } = getProperties(this, 'filteredContent', 'pageSize', 'currentPageNumber');
+
+        const startIndex = pageSize * (currentPageNumber - 1);
+
+        if (get(filteredContent, 'length') < pageSize) {
+            return filteredContent;
+        }
+        return A(filteredContent.slice(startIndex, startIndex + pageSize));
+    }),
+
+    /**
      * An array of Ember.Table.Row computed based on `content`
      */
-    bodyContent: Ember.computed(function() {
-        const content = this.get('content') || [];
-        return content.map((it) => {
+    bodyContent: computed('visibleContent.[]', function() {
+        const {
+            pageSize,
+            visibleContent
+        } = getProperties(this, 'visibleContent', 'pageSize');
+
+        let newContent = visibleContent.copy();
+        let counter = visibleContent.length;
+        while (counter < pageSize) {
+            newContent.pushObject(createContentPlaceholder());
+            counter ++;
+        }
+        return A(newContent.map((it) => {
             return {...it,
                 target: this,
                 parentController: this,
                 container: this.get('container'),
                 itemController: Row
             }
-        })
-    }).property('content.[]'),
+        }));
+    }),
 
     /**
      * fixed columns on the left
@@ -225,6 +346,16 @@ export default Ember.Component.extend(StyleBindingsMixin, ResizeHandlerMixin, {
      * =====================================================================
      */
 
+    /**
+     * True if all processedColumns are hidden by <code>isHidden</code>
+     *
+     * @type {boolean}
+     * @name ModelsTable#allColumnsAreHidden
+     */
+    allColumnsAreHidden: computed('processedColumns.@each.isHidden', function() {
+        const processedColumns = get(this, 'processedColumns');
+        return processedColumns.length > 0 && processedColumns.isEvery('isHidden', true);
+    }),
  
     /**
      * =====================================================================
