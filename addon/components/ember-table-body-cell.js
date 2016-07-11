@@ -13,12 +13,16 @@ export default Ember.Component.extend(StyleBindingsMixin, {
     // ---------------------------------------------------------------------------
     init: function() {
         this._super();
-        this.contentPathDidChange();
-        this.contentDidChange();
+        // this.contentPathDidChange();
+        // this.contentDidChange();
     },
     row: Ember.computed.alias('parentView.row'),
-    column: Ember.computed.alias('content'),
-    width: Ember.computed.alias('column.width'),
+    record: Ember.computed.alias('row'),
+    // It's really weird if use  alias, nothing will renderd and 
+    // no warning nor errors , maybe bug from StyleBinding Mixin
+    width: Ember.computed(function() {
+        return this.get('column.width');
+    }).property('column.width'),
     contentDidChange: function() {
         this.notifyPropertyChange('cellContent');
     },
@@ -46,5 +50,11 @@ export default Ember.Component.extend(StyleBindingsMixin, {
             column.setCellContent(row, value);
         }
         return value;
-    }).property('row.isLoaded', 'column')
+    }).property('column'),
+    actions: {
+        sendAction: function() {
+            const table = this.get('tableComponent');
+            table.sendAction.apply(table, arguments);
+        }
+    }
 });

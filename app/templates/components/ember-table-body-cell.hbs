@@ -1,3 +1,8 @@
 <span class="ember-table-content">
-  {{cellContent}}
+	{{#if column.template}}
+		{{log column.template}}
+		{{partial column.template}}
+	{{else}}
+		{{cellContent}}
+	{{/if}}
 </span>

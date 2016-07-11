@@ -4,7 +4,6 @@ export default Ember.Component.extend(RegisterTableComponentMixin, {
     classNames: 'ember-table-table-row',
     classNameBindings: ['row.isHovered:ember-table-hover', 'row.isSelected:ember-table-selected', 'row.rowStyle', 'isLastRow:ember-table-last-row'],
     row: Ember.computed.alias('content'),
-    columns: Ember.computed.alias('parentView.columns'),
     itemIndex: null,
 
     /**
